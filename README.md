@@ -1,11 +1,13 @@
 # వాస్తు దిక్సూచి – Vasthu Diksuchi
 
-Telugu / English Vasthu app for Android:
+Telugu / English Vasthu app for Android (version 3):
 
-- **Compass (దిక్సూచి)** – live phone-sensor compass with the 8 directions in Telugu.
-- **House check (ఇల్లు చెక్)** – on-site check of a house before renting or buying. Measure the main-door facing and the direction of each room, answer a few questions, and get a clear verdict: good / acceptable / not as per Vasthu, with the list of problems. Each house can be saved and shared.
-- **Rooms (గదులు)** – where each room should be, with a small colour dial.
-- **Directions (దిక్కులు)** – the 8 directions with deity, planet, element and tips.
+- **Accurate compass (దిక్సూచి)** – uses the phone's fused rotation sensor, so the reading is correct whether the phone is flat, upright or tilted. Flat: it reads the direction of the top of the phone; upright: the direction the camera looks. Smooth needle, ±degree accuracy, a calibration indicator, a figure-8 calibration guide, and a warning when iron or electrical items disturb the reading.
+- **Camera with compass** – live compass in the top-right corner. Every photo is stamped with the compass, the degrees, the direction, the label (main door, road, kitchen…) and date/time. Save to the gallery or share.
+- **Best facing for the family** – enter the Kartha's name (Telugu or English). The app finds the first syllable → name rasi (or pick the birth rasi), then shows the best house facing as a chart. Enter the plot size to also get the aayam (Dhwaja, Simha…).
+- **On-site house check** – road side(s) incl. corner plots, road slope, veedhi potu (road hitting the plot, tap on a picture), building/gate facing, main door (measured from inside OR from outside walking in), each room, and a few yes/no questions. Every direction can be measured with a photo.
+- **Report** – verdict with score gauge, suitability for the Kartha, the best side to enter from outside, a direction map with the rooms placed in their zones, score by area, issues with fixes, and the photos. Save and share.
+- **Telugu | English** switch at the top. Text cannot be selected or copied.
 
 Works fully offline once installed.
 
@@ -29,6 +31,7 @@ In the repository: **Settings → Pages → Branch: main, folder: /docs → Save
 
 ## Notes
 
-- Hold the phone flat. If the compass jumps, move the phone in a figure-8 to calibrate, and keep away from iron, magnets and electrical appliances.
+- Hold the phone any way. If the badge at the top says Calibrate, tap it and move the phone in a figure-8. Keep away from iron gates, cars, grills and electrical boards.
+- The app asks for Camera permission the first time you take a photo. On Android 9 and older it also asks for Storage when you save a photo.
 - Phones without a compass sensor get a manual direction slider.
 - The Vasthu guidance is a summary of traditional practice. Consult an experienced Vasthu expert before building or altering a house.

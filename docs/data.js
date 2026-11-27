@@ -115,9 +115,6 @@ const QUESTIONS = [
  {id:'swlow', bad:'yes', w:-3,
   te:'నైరుతి భాగం ఇంటిలో అత్యంత తక్కువ ఎత్తులో లేదా ఖాళీగా ఉందా (గుంత, వాలు)?', en:'Is the south-west the lowest or most open part (pit, slope)?',
   issue:{te:'నైరుతి తక్కువగా / ఖాళీగా ఉంది',en:'South-west is low or open'}},
- {id:'potu', bad:'yes', w:-4, crit:true,
-  te:'దక్షిణం, పడమర లేదా నైరుతి నుండి రోడ్డు నేరుగా ఇంటిని తాకుతోందా (వీధి పోటు)?', en:'Does a road end straight at the house from the south, west or south-west (veedhi potu)?',
-  issue:{te:'అశుభ వీధి పోటు',en:'Inauspicious road hit (veedhi potu)'}},
  {id:'centre', bad:'yes', w:-3,
   te:'ఇంటి మధ్యలో (బ్రహ్మస్థానం) మరుగుదొడ్డి, మెట్లు లేదా స్తంభం ఉందా?', en:'Is there a toilet, staircase or pillar at the centre (Brahmasthanam)?',
   issue:{te:'బ్రహ్మస్థానంలో అడ్డంకి',en:'Centre (Brahmasthanam) blocked'}},
@@ -130,4 +127,76 @@ const QUESTIONS = [
  {id:'shape', bad:'no', w:2,
   te:'ఇల్లు / స్థలం చతురస్రం లేదా దీర్ఘచతురస్రం ఆకారంలో ఉందా?', en:'Is the house / plot square or rectangular?',
   good:{te:'చతురస్ర / దీర్ఘచతురస్ర ఆకారం',en:'Square / rectangular shape'}, issue:{te:'ఆకారం సక్రమంగా లేదు',en:'Irregular shape'}}
+];
+
+// Road on one side of the plot / building. Measure: stand in front of the house looking at the road.
+const ROAD = {
+  N:  {score:3, v:'good', te:'ఉత్తర వీధి — శుభం', en:'Road on the north — good'},
+  E:  {score:3, v:'good', te:'తూర్పు వీధి — శుభం', en:'Road on the east — good'},
+  NE: {score:3, v:'good', te:'ఈశాన్య వీధి — అత్యంత శుభం', en:'Road on the north-east — very good'},
+  W:  {score:1, v:'ok',   te:'పడమర వీధి — మంచిదే', en:'Road on the west — fine'},
+  NW: {score:0, v:'ok',   te:'వాయువ్య వీధి — మధ్యమం', en:'Road on the north-west — average'},
+  S:  {score:0, v:'care', te:'దక్షిణ వీధి — ద్వారం ఆగ్నేయం వైపు ఉంటే పర్వాలేదు', en:'Road on the south — fine only if the door is towards the south-east'},
+  SE: {score:-1,v:'care', te:'ఆగ్నేయ వీధి — జాగ్రత్త అవసరం', en:'Road on the south-east — needs care'},
+  SW: {score:-3,v:'bad',  te:'నైరుతి వీధి — సాధారణంగా మంచిది కాదు', en:'Road on the south-west — generally not good'}
+};
+// Two roads (corner plot / roads on opposite sides). Key = the two directions sorted in DIRS order.
+const CORNER = {
+  'N+E':  {score:4, v:'good', te:'ఈశాన్య మూల స్థలం (ఉత్తరం + తూర్పు వీధులు) — అత్యంత శుభం', en:'North-east corner plot (roads on north and east) — very good'},
+  'E+S':  {score:0, v:'care', te:'ఆగ్నేయ మూల స్థలం (తూర్పు + దక్షిణం) — తూర్పు వైపు ద్వారం ఉంటే పర్వాలేదు', en:'South-east corner plot (east and south) — fine with the door on the east side'},
+  'N+W':  {score:1, v:'ok',   te:'వాయువ్య మూల స్థలం (ఉత్తరం + పడమర) — మంచిదే, ఉత్తరం వైపు ద్వారం ఉత్తమం', en:'North-west corner plot (north and west) — fine, door on the north side is best'},
+  'S+W':  {score:-4,v:'bad',  te:'నైరుతి మూల స్థలం (దక్షిణం + పడమర) — సాధారణంగా మంచిది కాదు', en:'South-west corner plot (south and west) — generally not good'},
+  'N+S':  {score:1, v:'ok',   te:'ఉత్తరం, దక్షిణం రెండు వైపులా వీధులు — పర్వాలేదు', en:'Roads on north and south — acceptable'},
+  'E+W':  {score:1, v:'ok',   te:'తూర్పు, పడమర రెండు వైపులా వీధులు — పర్వాలేదు', en:'Roads on east and west — acceptable'}
+};
+
+
+// Veedhi potu / veedhi shoola: a road that runs straight INTO the plot. Key = side + the corner half it hits.
+const POTU = {
+  'N-NE':{v:'good',w:3, te:'ఉత్తర ఈశాన్య వీధి పోటు — శుభం', en:'Road hitting the north side, north-east half — auspicious'},
+  'E-NE':{v:'good',w:3, te:'తూర్పు ఈశాన్య వీధి పోటు — శుభం', en:'Road hitting the east side, north-east half — auspicious'},
+  'S-SE':{v:'ok',  w:1, te:'దక్షిణ ఆగ్నేయ వీధి పోటు — పర్వాలేదు', en:'Road hitting the south side, south-east half — acceptable'},
+  'W-NW':{v:'ok',  w:1, te:'పడమర వాయువ్య వీధి పోటు — పర్వాలేదు', en:'Road hitting the west side, north-west half — acceptable'},
+  'N-NW':{v:'bad', w:-3, te:'ఉత్తర వాయువ్య వీధి పోటు — మంచిది కాదు', en:'Road hitting the north side, north-west half — not good'},
+  'E-SE':{v:'bad', w:-3, te:'తూర్పు ఆగ్నేయ వీధి పోటు — మంచిది కాదు', en:'Road hitting the east side, south-east half — not good'},
+  'S-SW':{v:'bad', w:-5, crit:true, te:'దక్షిణ నైరుతి వీధి పోటు — అత్యంత అశుభం', en:'Road hitting the south side, south-west half — very inauspicious'},
+  'W-SW':{v:'bad', w:-5, crit:true, te:'పడమర నైరుతి వీధి పోటు — అత్యంత అశుభం', en:'Road hitting the west side, south-west half — very inauspicious'}
+};
+// Road slope: the direction the road / ground runs DOWN towards.
+const SLOPE = {
+  N:{v:'good',w:2},NE:{v:'good',w:3},E:{v:'good',w:2},NW:{v:'ok',w:0},SE:{v:'ok',w:0},W:{v:'bad',w:-2},S:{v:'bad',w:-2},SW:{v:'bad',w:-3}
+};
+
+// Kartha (head of family) name -> rasi. Telugu first-syllable groups (nama nakshatra tradition).
+// el: fire/earth/air/water. dir: house facing traditionally recommended for that rasi's element.
+const RASI = [
+ {id:'mesha',     te:'మేషం',      en:'Mesha (Aries)',        el:'fire',  s:['చు','చే','చో','లా','లి','లు','లే','లో','అ'], r:['chu','che','cho','la','li','lu','le','lo','a']},
+ {id:'vrishabha', te:'వృషభం',     en:'Vrishabha (Taurus)',   el:'earth', s:['ఇ','ఉ','ఎ','ఒ','వ','వి','వు','వే','వో'], r:['i','u','e','o','va','vi','vu','ve','vo','wa','wi']},
+ {id:'mithuna',   te:'మిథునం',    en:'Mithuna (Gemini)',     el:'air',   s:['క','కి','కు','ఘ','ఙ','ఛ','కే','కో','హ'], r:['ka','ki','ku','gha','chha','ke','ko','ha','kha','qa']},
+ {id:'karkataka', te:'కర్కాటకం',  en:'Karkataka (Cancer)',   el:'water', s:['హి','హు','హే','హో','డ','డి','డు','డే','డో'], r:['hi','hu','he','ho']},
+ {id:'simha',     te:'సింహం',     en:'Simha (Leo)',          el:'fire',  s:['మ','మి','ము','మే','మో','ట','టి','టు','టే'], r:['ma','mi','mu','me','mo']},
+ {id:'kanya',     te:'కన్య',       en:'Kanya (Virgo)',        el:'earth', s:['టో','ప','పి','పు','ష','ణ','ఠ','పే','పో'], r:['pa','pi','pu','pe','po']},
+ {id:'tula',      te:'తుల',        en:'Tula (Libra)',         el:'air',   s:['ర','రి','రు','రే','రో','త','తి','తు','తే'], r:['ra','ri','ru','re','ro','ta','ti','tu','te','tha','thi','thu','the']},
+ {id:'vrischika', te:'వృశ్చికం',  en:'Vrischika (Scorpio)',  el:'water', s:['తో','న','ని','ను','నే','నో','య','యి','యు'], r:['to','tho','na','ni','nu','ne','no','ya','yi','yu']},
+ {id:'dhanus',    te:'ధనుస్సు',   en:'Dhanus (Sagittarius)', el:'fire',  s:['యే','యో','భ','భి','భు','ధ','ఫ','ఢ','భే'], r:['ye','yo','bha','bhi','bhu','dha','dhi','dhu','pha','fa','phi','fi','bhe','ba','bi','bu','be']},
+ {id:'makara',    te:'మకరం',      en:'Makara (Capricorn)',   el:'earth', s:['భో','జ','జి','ఖి','ఖు','ఖే','ఖో','గ','గి'], r:['bho','bo','ja','ji','khi','khu','khe','kho','ga','gi','za','zi']},
+ {id:'kumbha',    te:'కుంభం',     en:'Kumbha (Aquarius)',    el:'air',   s:['గు','గే','గో','స','సి','సు','సే','సో','ద'], r:['gu','ge','go','sa','si','su','se','so','da','sha','shi','shu','she','sho']},
+ {id:'meena',     te:'మీనం',      en:'Meena (Pisces)',       el:'water', s:['ది','దు','థ','ఝ','ఞ','దే','దో','చ','చి'], r:['di','du','jha','de','do','cha','chi']}
+];
+const ELEM = {
+ fire:  {dir:'E', te:'అగ్ని తత్వం',  en:'Fire element'},
+ earth: {dir:'S', te:'భూ తత్వం',    en:'Earth element'},
+ air:   {dir:'W', te:'వాయు తత్వం',  en:'Air element'},
+ water: {dir:'N', te:'జల తత్వం',    en:'Water element'}
+};
+// Aaya from the plot / built-up area (sq ft) % 8. Odd = auspicious. Preferred facing for the good aayas.
+const AAYA = [
+ {te:'కాకాయం',  en:'Kaka',     good:false},
+ {te:'ధ్వజాయం', en:'Dhwaja',   good:true, dir:'E', all:true},
+ {te:'ధూమాయం',  en:'Dhuma',    good:false},
+ {te:'సింహాయం', en:'Simha',    good:true, dir:'S'},
+ {te:'శ్వానాయం', en:'Shwana',   good:false},
+ {te:'వృషభాయం', en:'Vrishabha',good:true, dir:'W'},
+ {te:'ఖరాయం',   en:'Khara',    good:false},
+ {te:'గజాయం',   en:'Gaja',     good:true, dir:'N'}
 ];
